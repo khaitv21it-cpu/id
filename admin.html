@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Admin Dashboard — Demo</title>
+  <style>
+:root {
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #0f4c81;
+  --primary-hover: #0a3a63;
+  --danger: #b91c1c;
+  --danger-hover: #991b1b;
+  --success: #166534;
+  --sidebar: #0b1f33;
+  --font: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.admin-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  background: var(--sidebar);
+  color: #e2e8f0;
+  padding: 20px 14px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 14px;
+}
+
+.brand-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #1d4ed8;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sidebar-brand strong {
+  display: block;
+  font-size: 14px;
+}
+
+.sidebar-brand small {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-link {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.nav-link.is-active {
+  background: rgba(29, 78, 216, 0.35);
+  color: #fff;
+}
+
+.nav-link--external {
+  margin-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 16px;
+  color: #93c5fd;
+}
+
+.admin-main {
+  padding: 20px 24px 40px;
+  min-width: 0;
+}
+
+.admin-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.admin-top h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.admin-sub {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.menu-toggle {
+  display: none;
+  border: 1px solid var(--border);
+  background: #fff;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.toast {
+  margin-left: auto;
+  background: #ecfdf5;
+  color: var(--success);
+  border: 1px solid #bbf7d0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.toast.is-error {
+  background: #fef2f2;
+  color: var(--danger);
+  border-color: #fecaca;
+}
+
+.panel {
+  display: none;
+}
+
+.panel.is-active {
+  display: block;
+}
+
+.panel-head {
+  margin-bottom: 14px;
+}
+
+.panel-head h2 {
+  margin: 0 0 4px;
+  font-size: 18px;
+}
+
+.panel-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.form-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.field--full {
+  grid-column: 1 / -1;
+}
+
+.field--check {
+  justify-content: flex-end;
+}
+
+.field input,
+.field select,
+.field textarea {
+  font: inherit;
+  font-weight: 500;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid rgba(15, 76, 129, 0.25);
+  border-color: var(--primary);
+}
+
+.check-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.btn-ghost {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.btn-danger {
+  background: #fee2e2;
+  color: var(--danger);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #fecaca;
+  color: var(--danger-hover);
+}
+
+.btn-sm {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.photo-admin {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.photo-current {
+  min-width: 0;
+}
+
+.photo-frame {
+  width: 180px;
+  height: 220px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Khung CCCD — cung ty le voi landing */
+.photo-frame--cccd,
+.preview-frame--cccd {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1.586 / 1;
+  height: auto;
+  min-height: unset;
+  border: 1.5px solid #da251d;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.photo-frame--cccd img,
+.preview-frame--cccd img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  background: #fff;
+}
+
+.photo-frame--cccd .no-photo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+}
+
+.no-photo {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.file-drop {
+  display: block;
+  border: 1.5px dashed #94a3b8;
+  border-radius: 10px;
+  padding: 22px;
+  text-align: center;
+  cursor: pointer;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.file-drop input {
+  display: none;
+}
+
+.file-drop:hover {
+  border-color: var(--primary);
+  background: #eff6ff;
+}
+
+.preview-box {
+  margin-top: 12px;
+}
+
+.preview-box p {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.preview-box img {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1.586 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 2px;
+  border: 1.5px solid #da251d;
+}
+
+.list-title {
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.sections-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.section-order {
+  font-weight: 800;
+  color: var(--muted);
+  text-align: center;
+}
+
+.section-meta strong {
+  display: block;
+  font-size: 14px;
+}
+
+.section-meta span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.section-row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: min(280px, 86vw);
+    z-index: 40;
+    transform: translateX(-105%);
+    transition: transform 0.2s ease;
+  }
+
+  .sidebar.is-open {
+    transform: translateX(0);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 30;
+  }
+
+  .form-grid,
+  .photo-admin {
+    grid-template-columns: 1fr;
+  }
+
+  .section-row {
+    grid-template-columns: 40px 1fr;
+  }
+
+  .section-row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 520px) {
+  .admin-main {
+    padding: 14px 12px 32px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .toast {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    margin: 0;
+    z-index: 50;
+    text-align: center;
+  }
+}
+
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-mark">A</span>
+        <div>
+          <strong>Admin Dashboard</strong>
+          <small>Demo local · Không đăng nhập</small>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#profile" class="nav-link is-active" data-panel="profile">Thông tin hồ sơ</a>
+        <a href="#photo" class="nav-link" data-panel="photo">Ảnh CCCD</a>
+        <a href="#sections" class="nav-link" data-panel="sections">Các mục thông tin</a>
+        <a href="#settings" class="nav-link" data-panel="settings">Cài đặt giao diện</a>
+        <a href="index.html" class="nav-link nav-link--external">Xem Landing ↗</a>
+      </nav>
+    </aside>
+
+    <div class="admin-main">
+      <header class="admin-top">
+        <button type="button" class="menu-toggle" id="menuToggle" aria-label="Menu">☰</button>
+        <div>
+          <h1>Quản trị hồ sơ demo</h1>
+          <p class="admin-sub">Dữ liệu lưu localStorage · Trang admin riêng</p>
+        </div>
+        <div id="toast" class="toast is-hidden" role="status"></div>
+      </header>
+
+      <div class="panels">
+        <!-- PROFILE -->
+        <section class="panel is-active" id="panel-profile">
+          <div class="panel-head">
+            <h2>Thông tin hồ sơ</h2>
+            <p>CRUD đầy đủ. Sau khi lưu, trang Landing cập nhật ngay.</p>
+          </div>
+
+          <form id="profileForm" class="form-card" autocomplete="off">
+            <input type="hidden" id="profileId" />
+
+            <div class="form-grid">
+              <label class="field">
+                <span>Số định danh cá nhân</span>
+                <input type="text" id="id_number" maxlength="20" required />
+              </label>
+              <label class="field">
+                <span>Họ, chữ đệm và tên</span>
+                <input type="text" id="full_name" maxlength="200" required />
+              </label>
+              <label class="field">
+                <span>Ngày sinh</span>
+                <input type="text" id="date_of_birth" maxlength="20" placeholder="DD/MM/YYYY" />
+              </label>
+              <label class="field">
+                <span>Giới tính</span>
+                <select id="gender">
+                  <option value="Nam">Nam</option>
+                  <option value="Nữ">Nữ</option>
+                  <option value="Khác">Khác</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Quốc tịch</span>
+                <input type="text" id="nationality" maxlength="100" />
+              </label>
+              <label class="field">
+                <span>Nơi sinh</span>
+                <input type="text" id="birthplace" maxlength="300" />
+              </label>
+              <label class="field field--full">
+                <span>Nơi đăng ký khai sinh</span>
+                <input type="text" id="birth_registration_place" maxlength="300" />
+              </label>
+              <label class="field field--full">
+                <span>Quê quán</span>
+                <input type="text" id="hometown" maxlength="300" />
+              </label>
+              <label class="field">
+                <span>Dân tộc</span>
+                <input type="text" id="ethnicity" maxlength="100" />
+              </label>
+              <label class="field">
+                <span>Tôn giáo</span>
+                <input type="text" id="religion" maxlength="100" />
+              </label>
+              <label class="field field--full">
+                <span>Nơi thường trú</span>
+                <input type="text" id="permanent_address" maxlength="500" />
+              </label>
+              <label class="field field--full">
+                <span>Nơi tạm trú</span>
+                <input type="text" id="temporary_address" maxlength="500" />
+              </label>
+              <label class="field field--full">
+                <span>Nơi ở hiện tại</span>
+                <input type="text" id="current_address" maxlength="500" />
+              </label>
+              <label class="field field--full">
+                <span>Đặc điểm nhận dạng</span>
+                <textarea id="identification_features" rows="3" maxlength="2000"></textarea>
+              </label>
+              <label class="field">
+                <span>Ngày cấp CCCD gần nhất</span>
+                <input type="text" id="latest_card_issue_date" maxlength="20" placeholder="DD/MM/YYYY" />
+              </label>
+              <label class="field">
+                <span>Nhóm máu</span>
+                <input type="text" id="blood_type" maxlength="20" />
+              </label>
+              <label class="field">
+                <span>Số CMND 9 số</span>
+                <input type="text" id="old_id_number" maxlength="20" />
+              </label>
+              <label class="field field--full">
+                <span>Nghề nghiệp</span>
+                <input type="text" id="occupation" maxlength="200" />
+              </label>
+              <label class="field field--full">
+                <span>Số thuê bao di động (2 dòng: Đăng ký tài khoản / Khác)</span>
+                <textarea id="mobile_numbers" rows="2" maxlength="2000" placeholder="Đăng ký tài khoản định danh: 0946314528&#10;Khác: 0363879316"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>Địa chỉ thư điện tử</span>
+                <input type="email" id="email" maxlength="200" />
+              </label>
+              <label class="field field--full">
+                <span>Thông tin gia đình (nội dung modal)</span>
+                <textarea id="family_info" rows="3" maxlength="5000"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>Thông tin giấy tờ (nội dung modal)</span>
+                <textarea id="document_info" rows="3" maxlength="5000"></textarea>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary" id="saveProfileBtn">Lưu</button>
+              <button type="button" class="btn btn-ghost" id="resetProfileBtn">Hủy</button>
+              <button type="button" class="btn btn-danger" id="deleteProfileBtn">Xóa hồ sơ</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- PHOTO -->
+        <section class="panel" id="panel-photo">
+          <div class="panel-head">
+            <h2>Ảnh CCCD</h2>
+            <p>Upload ảnh thẻ Căn cước hiển thị trên landing · JPG/PNG/WebP · tối đa 5MB · Không OCR</p>
+          </div>
+
+          <div class="form-card">
+            <div class="photo-admin">
+              <div class="photo-current">
+                <h3>Ảnh CCCD hiện tại</h3>
+                <div class="photo-frame photo-frame--cccd">
+                  <img id="currentPhoto" class="is-hidden" alt="Ảnh CCCD hiện tại" />
+                  <div id="noPhoto" class="no-photo">Chưa có ảnh CCCD</div>
+                </div>
+              </div>
+
+              <div class="photo-upload">
+                <h3>Upload / Thay ảnh CCCD</h3>
+                <label class="file-drop">
+                  <input type="file" id="photoInput" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                  <span>Chọn ảnh CCCD hoặc kéo thả vào đây</span>
+                </label>
+                <div class="preview-box is-hidden" id="previewBox">
+                  <p>Preview (khung CCCD 1.586:1)</p>
+                  <div class="preview-frame--cccd">
+                    <img id="previewImage" alt="Preview" />
+                  </div>
+                </div>
+                <div class="form-actions">
+                  <button type="button" class="btn btn-primary" id="uploadBtn" disabled>Upload / Thay ảnh</button>
+                  <button type="button" class="btn btn-danger" id="deletePhotoBtn">Xóa ảnh</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTIONS -->
+        <section class="panel" id="panel-sections">
+          <div class="panel-head">
+            <h2>Các mục thông tin</h2>
+            <p>Quản lý các mục phía dưới landing (thêm / sửa / xóa / thứ tự).</p>
+          </div>
+
+          <div class="form-card">
+            <form id="sectionForm" class="section-form" autocomplete="off">
+              <input type="hidden" id="sectionId" />
+              <div class="form-grid">
+                <label class="field field--full">
+                  <span>Tiêu đề</span>
+                  <input type="text" id="sectionTitle" maxlength="300" required />
+                </label>
+                <label class="field field--full">
+                  <span>Nội dung</span>
+                  <textarea id="sectionContent" rows="5" maxlength="10000"></textarea>
+                </label>
+                <label class="field">
+                  <span>Thứ tự</span>
+                  <input type="number" id="sectionSort" value="0" />
+                </label>
+                <label class="field field--check">
+                  <span>Hiển thị</span>
+                  <label class="check-inline">
+                    <input type="checkbox" id="sectionVisible" checked />
+                    Hiện trên landing
+                  </label>
+                </label>
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="saveSectionBtn">Lưu mục</button>
+                <button type="button" class="btn btn-ghost" id="resetSectionBtn">Hủy / Tạo mới</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="form-card" style="margin-top: 16px;">
+            <h3 class="list-title">Danh sách mục</h3>
+            <div id="sectionsTable" class="sections-table"></div>
+          </div>
+        </section>
+
+        <!-- SETTINGS -->
+        <section class="panel" id="panel-settings">
+          <div class="panel-head">
+            <h2>Cài đặt giao diện</h2>
+            <p>Tiêu đề trang và banner demo.</p>
+          </div>
+
+          <form id="settingsForm" class="form-card" autocomplete="off">
+            <div class="form-grid">
+              <label class="field field--full">
+                <span>Tiêu đề trang (header)</span>
+                <input type="text" id="page_title" maxlength="200" />
+              </label>
+              <label class="field field--full">
+                <span>Nội dung banner demo</span>
+                <input type="text" id="demo_banner" maxlength="200" />
+              </label>
+              <label class="field field--check">
+                <span>Hiển thị banner</span>
+                <label class="check-inline">
+                  <input type="checkbox" id="show_demo_banner" checked />
+                  Hiện dòng “BẢN DEMO…”
+                </label>
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Lưu cài đặt</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-backdrop is-hidden" id="sidebarBackdrop"></div>
+
+  <script>
+(function () {
+  "use strict";
+
+  const STORAGE_KEY = "web2m_demo_v1";
+
+  const SEED = {
+    profile: {
+      id: 1,
+      id_number: "010000000001",
+      full_name: "NGUYỄN VĂN DEMO",
+      date_of_birth: "01/01/1990",
+      gender: "Nam",
+      nationality: "Việt Nam",
+      birthplace: "---",
+      birth_registration_place: "Phường Demo, Thành phố Hà Nội",
+      hometown: "Phường Demo, Thành phố Hà Nội",
+      ethnicity: "Kinh",
+      religion: "Không",
+      permanent_address: "Số 1 Đường Demo, Phường Demo, Thành phố Hà Nội",
+      temporary_address: "Tổ 1, Phường Mẫu, Tỉnh Demo",
+      current_address: "Tổ 1, Phường Mẫu, Tỉnh Demo",
+      identification_features: "Nốt ruồi C:1cm5 dưới trước đầu mắt phải",
+      latest_card_issue_date: "30/03/2021",
+      blood_type: "",
+      old_id_number: "206249803",
+      occupation: "",
+      mobile_numbers: "Đăng ký tài khoản định danh: 0946314528\\nKhác: 0363879316",
+      email: "",
+      family_info: "Thông tin gia đình, người đại diện hợp pháp (dữ liệu mẫu).",
+      document_info: "Thông tin giấy tờ (dữ liệu mẫu).",
+      card_image: null,
+      updated_at: "2026-03-17T10:42:00.000Z",
+    },
+    sections: [
+      {
+        id: 1,
+        title: "Thẻ Căn cước",
+        content: "Đây là nội dung demo cho mục thẻ căn cước.\n\nChỉnh sửa tại trang admin.html.\nKhông có chức năng OCR.",
+        icon: "arrow",
+        sort_order: 1,
+        is_visible: true,
+      },
+      {
+        id: 2,
+        title: "Lịch sử cấp thẻ CC/CCCD/CMND",
+        content: "Lịch sử cấp thẻ (dữ liệu mẫu):\n\n• 01/01/2020 — Cấp mới (demo)\n• 15/06/2023 — Cấp đổi (demo)",
+        icon: "arrow",
+        sort_order: 2,
+        is_visible: true,
+      },
+      {
+        id: 3,
+        title: "Lịch sử yêu cầu khóa/mở khóa Căn cước điện tử",
+        content: "Lịch sử khóa/mở khóa (dữ liệu mẫu):\n\n• Chưa có yêu cầu nào trong bản demo.",
+        icon: "arrow",
+        sort_order: 3,
+        is_visible: true,
+      },
+    ],
+    settings: {
+      page_title: "Căn cước điện tử",
+      demo_banner: "",
+      show_demo_banner: false,
+    },
+    nextSectionId: 4,
+  };
+
+  function loadData() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data?.sections)) {
+          let changed = false;
+          data.sections.forEach((section) => {
+            if (section.title === "Thẻ Căn cước công dân") {
+              section.title = "Thẻ Căn cước";
+              changed = true;
+            }
+          });
+          if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+        return data;
+      }
+    } catch (_) {}
+    return JSON.parse(JSON.stringify(SEED));
+  }
+
+  function saveData(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function displayValue(value) {
+    const text = String(value ?? "").trim();
+    return text || "---";
+  }
+
+  function formatUpdatedAt(iso) {
+    if (!iso) return "—";
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return "—";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${pad(d.getHours())}:${pad(d.getMinutes())} ${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+  }
+
+  function nowIso() {
+    return new Date().toISOString();
+  }
+
+  function imageSrc(cardImage) {
+    if (!cardImage) return "";
+    if (cardImage.startsWith("data:") || cardImage.startsWith("http")) return cardImage;
+    return `/uploads/${encodeURIComponent(cardImage)}`;
+  }
+
+  let data = loadData();
+  let selectedFile = null;
+  let croppedDataUrl = null;
+  let previewUrl = null;
+  const CCCD_RATIO = 1.586;
+  const $ = (id) => document.getElementById(id);
+
+  function cropImageToCccd(source) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      let objectUrl = null;
+      img.onload = () => {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        const srcW = img.naturalWidth;
+        const srcH = img.naturalHeight;
+        const srcRatio = srcW / srcH;
+        let cropW, cropH, sx, sy;
+        if (srcRatio > CCCD_RATIO) {
+          cropH = srcH;
+          cropW = Math.round(srcH * CCCD_RATIO);
+          sx = Math.round((srcW - cropW) / 2);
+          sy = 0;
+        } else {
+          cropW = srcW;
+          cropH = Math.round(srcW / CCCD_RATIO);
+          sx = 0;
+          sy = Math.round((srcH - cropH) / 2);
+        }
+        const outW = 1200;
+        const outH = Math.round(outW / CCCD_RATIO);
+        const canvas = document.createElement("canvas");
+        canvas.width = outW;
+        canvas.height = outH;
+        canvas.getContext("2d").drawImage(img, sx, sy, cropW, cropH, 0, 0, outW, outH);
+        resolve(canvas.toDataURL("image/jpeg", 0.92));
+      };
+      img.onerror = () => {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        reject(new Error("Không đọc được ảnh"));
+      };
+      if (typeof source === "string") img.src = source;
+      else {
+        objectUrl = URL.createObjectURL(source);
+        img.src = objectUrl;
+      }
+    });
+  }
+
+  function showToast(msg, isError) {
+    const el = $("toast");
+    el.textContent = msg;
+    el.classList.toggle("is-error", !!isError);
+    el.classList.remove("is-hidden");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el.classList.add("is-hidden"), 3200);
+  }
+
+  function fillProfileForm(profile) {
+    $("id_number").value = profile?.id_number || "";
+    $("full_name").value = profile?.full_name || "";
+    $("date_of_birth").value = profile?.date_of_birth || "";
+    $("gender").value = profile?.gender || "Nam";
+    $("nationality").value = profile?.nationality || "";
+    $("birthplace").value = profile?.birthplace || "";
+    $("birth_registration_place").value = profile?.birth_registration_place || "";
+    $("hometown").value = profile?.hometown || "";
+    $("ethnicity").value = profile?.ethnicity || "";
+    $("religion").value = profile?.religion || "";
+    $("permanent_address").value = profile?.permanent_address || "";
+    $("temporary_address").value = profile?.temporary_address || "";
+    $("current_address").value = profile?.current_address || "";
+    $("identification_features").value = profile?.identification_features || "";
+    $("latest_card_issue_date").value = profile?.latest_card_issue_date || "";
+    $("blood_type").value = profile?.blood_type || "";
+    $("old_id_number").value = profile?.old_id_number || "";
+    $("occupation").value = profile?.occupation || "";
+    $("mobile_numbers").value = profile?.mobile_numbers || "";
+    $("email").value = profile?.email || "";
+    $("family_info").value = profile?.family_info || "";
+    $("document_info").value = profile?.document_info || "";
+  }
+
+  function getProfilePayload() {
+    return {
+      id_number: $("id_number").value.trim(),
+      full_name: $("full_name").value.trim(),
+      date_of_birth: $("date_of_birth").value.trim(),
+      gender: $("gender").value,
+      nationality: $("nationality").value.trim(),
+      birthplace: $("birthplace").value.trim(),
+      birth_registration_place: $("birth_registration_place").value.trim(),
+      hometown: $("hometown").value.trim(),
+      ethnicity: $("ethnicity").value.trim(),
+      religion: $("religion").value.trim(),
+      permanent_address: $("permanent_address").value.trim(),
+      temporary_address: $("temporary_address").value.trim(),
+      current_address: $("current_address").value.trim(),
+      identification_features: $("identification_features").value.trim(),
+      latest_card_issue_date: $("latest_card_issue_date").value.trim(),
+      blood_type: $("blood_type").value.trim(),
+      old_id_number: $("old_id_number").value.trim(),
+      occupation: $("occupation").value.trim(),
+      mobile_numbers: $("mobile_numbers").value.trim(),
+      email: $("email").value.trim(),
+      family_info: $("family_info").value.trim(),
+      document_info: $("document_info").value.trim(),
+    };
+  }
+
+  function renderAdminPhoto() {
+    const p = data.profile;
+    const img = $("currentPhoto");
+    const no = $("noPhoto");
+    const src = imageSrc(p?.card_image);
+    if (src) {
+      img.src = src;
+      img.classList.remove("is-hidden");
+      no.classList.add("is-hidden");
+    } else {
+      img.removeAttribute("src");
+      img.classList.add("is-hidden");
+      no.classList.remove("is-hidden");
+    }
+  }
+
+  function clearPreview() {
+    if (previewUrl && previewUrl.startsWith("blob:")) URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+    selectedFile = null;
+    croppedDataUrl = null;
+    $("photoInput").value = "";
+    $("previewBox").classList.add("is-hidden");
+    $("uploadBtn").disabled = true;
+  }
+
+  function renderAdminSections() {
+    const table = $("sectionsTable");
+    if (!data.sections.length) {
+      table.innerHTML = '<p style="color:#64748b;font-size:13px;">Chưa có mục nào.</p>';
+      return;
+    }
+    const sorted = [...data.sections].sort((a, b) => a.sort_order - b.sort_order || a.id - b.id);
+    table.innerHTML = sorted
+      .map(
+        (s) => `<div class="section-row"><div class="section-order">${escapeHtml(s.sort_order)}</div><div class="section-meta"><strong>${escapeHtml(s.title)}</strong><span>${s.is_visible ? "Đang hiện" : "Đang ẩn"} · ID ${s.id}</span></div><div class="section-row-actions"><button type="button" class="btn btn-ghost btn-sm" data-edit="${s.id}">Sửa</button><button type="button" class="btn btn-danger btn-sm" data-delete="${s.id}">Xóa</button></div></div>`
+      )
+      .join("");
+  }
+
+  function fillSectionForm(section) {
+    $("sectionId").value = section?.id || "";
+    $("sectionTitle").value = section?.title || "";
+    $("sectionContent").value = section?.content || "";
+    $("sectionSort").value = section?.sort_order ?? 0;
+    $("sectionVisible").checked = section ? !!section.is_visible : true;
+    $("saveSectionBtn").textContent = section ? "Cập nhật mục" : "Thêm mục";
+  }
+
+  function fillSettingsForm() {
+    const s = data.settings;
+    $("page_title").value = s.page_title || "";
+    $("demo_banner").value = s.demo_banner || "";
+    $("show_demo_banner").checked = !!s.show_demo_banner;
+  }
+
+  function closeMobileSidebar() {
+    document.querySelector(".sidebar")?.classList.remove("is-open");
+    $("sidebarBackdrop")?.classList.add("is-hidden");
+  }
+
+  function initAdmin() {
+    fillProfileForm(data.profile);
+    renderAdminPhoto();
+    renderAdminSections();
+    fillSettingsForm();
+    fillSectionForm(null);
+
+    document.querySelectorAll(".nav-link[data-panel]").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const panel = link.dataset.panel;
+        document.querySelectorAll(".nav-link[data-panel]").forEach((l) => l.classList.toggle("is-active", l === link));
+        document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("is-active", p.id === `panel-${panel}`));
+        closeMobileSidebar();
+      });
+    });
+
+    $("menuToggle").addEventListener("click", () => {
+      document.querySelector(".sidebar").classList.add("is-open");
+      $("sidebarBackdrop").classList.remove("is-hidden");
+    });
+    $("sidebarBackdrop").addEventListener("click", closeMobileSidebar);
+
+    $("profileForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const payload = getProfilePayload();
+      if (data.profile) {
+        Object.assign(data.profile, payload, { updated_at: nowIso() });
+      } else {
+        data.profile = { id: 1, ...payload, card_image: null, updated_at: nowIso() };
+      }
+      saveData(data);
+      fillProfileForm(data.profile);
+      showToast("✓ Đã cập nhật thông tin");
+    });
+
+    $("resetProfileBtn").addEventListener("click", () => {
+      fillProfileForm(data.profile);
+      showToast("Đã hoàn tác form");
+    });
+
+    $("deleteProfileBtn").addEventListener("click", () => {
+      if (!data.profile) return showToast("Chưa có hồ sơ", true);
+      if (!confirm("Xóa toàn bộ hồ sơ?")) return;
+      data.profile = null;
+      saveData(data);
+      fillProfileForm(null);
+      renderAdminPhoto();
+      clearPreview();
+      showToast("✓ Đã xóa hồ sơ");
+    });
+
+    $("photoInput").addEventListener("change", async () => {
+      const file = $("photoInput").files?.[0];
+      if (!file) return clearPreview();
+      const allowed = ["image/jpeg", "image/png", "image/webp"];
+      if (!allowed.includes(file.type)) {
+        showToast("Chỉ JPG, PNG, WebP", true);
+        return clearPreview();
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        showToast("File > 5MB", true);
+        return clearPreview();
+      }
+      try {
+        clearPreview();
+        selectedFile = file;
+        croppedDataUrl = await cropImageToCccd(file);
+        previewUrl = croppedDataUrl;
+        $("previewImage").src = croppedDataUrl;
+        $("previewBox").classList.remove("is-hidden");
+        $("uploadBtn").disabled = false;
+      } catch (err) {
+        showToast(err.message || "Không xử lý được ảnh", true);
+        clearPreview();
+      }
+    });
+
+    $("uploadBtn").addEventListener("click", () => {
+      if (!croppedDataUrl || !data.profile) {
+        return showToast("Lưu hồ sơ trước khi upload", true);
+      }
+      data.profile.card_image = croppedDataUrl;
+      data.profile.updated_at = nowIso();
+      saveData(data);
+      renderAdminPhoto();
+      clearPreview();
+      showToast("✓ Đã cập nhật ảnh CCCD");
+    });
+
+    $("deletePhotoBtn").addEventListener("click", () => {
+      if (!data.profile?.card_image) return showToast("Không có ảnh CCCD", true);
+      if (!confirm("Xóa ảnh CCCD?")) return;
+      data.profile.card_image = null;
+      data.profile.updated_at = nowIso();
+      saveData(data);
+      renderAdminPhoto();
+      clearPreview();
+      showToast("✓ Đã xóa ảnh CCCD");
+    });
+
+    $("sectionForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = $("sectionId").value;
+      const payload = {
+        title: $("sectionTitle").value.trim(),
+        content: $("sectionContent").value,
+        icon: "arrow",
+        sort_order: Number($("sectionSort").value) || 0,
+        is_visible: $("sectionVisible").checked,
+      };
+      if (id) {
+        const sec = data.sections.find((s) => String(s.id) === id);
+        if (sec) Object.assign(sec, payload);
+        showToast("✓ Đã cập nhật mục");
+      } else {
+        data.sections.push({ id: data.nextSectionId++, ...payload });
+        showToast("✓ Đã thêm mục");
+      }
+      saveData(data);
+      renderAdminSections();
+      fillSectionForm(null);
+    });
+
+    $("resetSectionBtn").addEventListener("click", () => fillSectionForm(null));
+
+    $("sectionsTable").addEventListener("click", (e) => {
+      const editId = e.target.getAttribute("data-edit");
+      const deleteId = e.target.getAttribute("data-delete");
+      if (editId) {
+        const sec = data.sections.find((s) => String(s.id) === editId);
+        if (sec) fillSectionForm(sec);
+        return;
+      }
+      if (deleteId) {
+        if (!confirm("Xóa mục này?")) return;
+        data.sections = data.sections.filter((s) => String(s.id) !== deleteId);
+        saveData(data);
+        renderAdminSections();
+        if ($("sectionId").value === deleteId) fillSectionForm(null);
+        showToast("✓ Đã xóa mục");
+      }
+    });
+
+    $("settingsForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      data.settings = {
+        page_title: $("page_title").value.trim(),
+        demo_banner: $("demo_banner").value.trim(),
+        show_demo_banner: $("show_demo_banner").checked,
+      };
+      saveData(data);
+      fillSettingsForm();
+      showToast("✓ Đã cập nhật cài đặt");
+    });
+
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "btn btn-ghost";
+    resetBtn.textContent = "Reset dữ liệu mẫu";
+    resetBtn.style.marginTop = "12px";
+    resetBtn.addEventListener("click", () => {
+      if (!confirm("Khôi phục dữ liệu demo mặc định?")) return;
+      data = JSON.parse(JSON.stringify(SEED));
+      saveData(data);
+      fillProfileForm(data.profile);
+      renderAdminPhoto();
+      renderAdminSections();
+      fillSettingsForm();
+      showToast("✓ Đã reset dữ liệu mẫu");
+    });
+    $("settingsForm").appendChild(resetBtn);
+  }
+
+  initAdmin();
+
+})();
+  </script>
+</body>
+</html>
