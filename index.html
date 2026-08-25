@@ -1141,6 +1141,27 @@ body {
     if (history.length > 1) history.back();
     else window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  (function setupHiddenAdminEntry() {
+    const title = document.getElementById("pageTitle");
+    if (!title) return;
+    let timer = null;
+    const adminHref = new URL("admin.html", location.href).href;
+    const start = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        location.href = adminHref;
+      }, 2000);
+    };
+    const cancel = () => clearTimeout(timer);
+    title.addEventListener("touchstart", start, { passive: true });
+    title.addEventListener("touchend", cancel);
+    title.addEventListener("touchcancel", cancel);
+    title.addEventListener("mousedown", start);
+    title.addEventListener("mouseup", cancel);
+    title.addEventListener("mouseleave", cancel);
+  })();
+
   document.getElementById("familyInfoBtn").addEventListener("click", () => {
     if (!currentProfile) return;
     openInfoModal(
