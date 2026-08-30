@@ -38,7 +38,6 @@
   --label-font-weight: 800;
   --info-letter-spacing: -0.015em;
   --page-bottom-trim: 0px;
-  --page-footer-shift: 10px;
 }
 
 *,
@@ -254,7 +253,6 @@ body {
   flex-shrink: 0;
   background: #ffffff;
   padding: 0 var(--side-padding) 0;
-  transform: translateY(var(--page-footer-shift, 0px));
 }
 
 /* Panel content: trong suot — nen nam o .page-body::before */
@@ -639,7 +637,7 @@ body {
   flex-direction: column;
   gap: 0;
   margin: 0 calc(var(--side-padding) * -1);
-  padding: 2px var(--side-padding) max(0px, calc(env(safe-area-inset-bottom, 0px) - 55px));
+  padding: 0 var(--side-padding) max(0px, calc(env(safe-area-inset-bottom, 0px) - 55px));
   background: #ffffff;
 }
 
@@ -803,6 +801,7 @@ body {
 @media (min-width: 768px) {
   :root {
     --page-bottom-trim: 0px;
+    --page-footer-shift: 0px;
   }
 
   body {
