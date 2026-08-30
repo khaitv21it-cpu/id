@@ -38,6 +38,7 @@
   --label-font-weight: 800;
   --info-letter-spacing: -0.015em;
   --page-bottom-trim: 0px;
+  --page-footer-shift: 10px;
 }
 
 *,
@@ -253,6 +254,7 @@ body {
   flex-shrink: 0;
   background: #ffffff;
   padding: 0 var(--side-padding) 0;
+  transform: translateY(var(--page-footer-shift, 0px));
 }
 
 /* Panel content: trong suot — nen nam o .page-body::before */
