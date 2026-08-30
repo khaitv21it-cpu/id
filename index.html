@@ -55,10 +55,10 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100%;
   min-height: 100dvh;
   min-height: -webkit-fill-available;
-  background: #e8e0d4;
+  background: #ffffff;
   font-family: var(--font);
   color: var(--value-color);
   -webkit-font-smoothing: antialiased;
@@ -80,19 +80,10 @@ body {
 .app-shell,
 .page {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  inset: 0;
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
-  min-height: 100vh;
-  min-height: 100dvh;
-  min-height: -webkit-fill-available;
-  height: 100vh;
-  height: 100dvh;
-  height: -webkit-fill-available;
   padding-top: 0;
   background-color: #ffffff;
   overflow: hidden;
@@ -256,7 +247,7 @@ body {
   z-index: 2;
   flex-shrink: 0;
   background: #ffffff;
-  padding: 0 var(--side-padding) env(safe-area-inset-bottom, 0);
+  padding: 0 var(--side-padding) max(10px, env(safe-area-inset-bottom, 0px));
 }
 
 /* Panel content: trong suot — nen nam o .page-body::before */
@@ -1309,8 +1300,6 @@ body {
   });
 
   renderLanding();
-  syncPageBg();
-  window.addEventListener("resize", syncPageBg);
 
 })();
   </script>
