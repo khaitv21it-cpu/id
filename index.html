@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="theme-color" content="#ffffff" />
+  <meta name="theme-color" content="#e8e0d4" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Căn cước điện tử" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
@@ -37,7 +37,6 @@
   --info-font-weight: 800;
   --label-font-weight: 800;
   --info-letter-spacing: -0.015em;
-  --page-footer-h: 0px;
 }
 
 *,
@@ -46,13 +45,20 @@
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
   width: 100%;
   min-height: 100vh;
-  background: #ffffff;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
+  background: #e8e0d4;
   font-family: var(--font);
   color: var(--value-color);
   -webkit-font-smoothing: antialiased;
@@ -62,6 +68,7 @@ body {
 
 body {
   height: 100%;
+  height: -webkit-fill-available;
   overflow: hidden;
 }
 
@@ -72,16 +79,22 @@ body {
 /* ===== Page shell ===== */
 .app-shell,
 .page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
   min-height: 100vh;
   min-height: 100dvh;
+  min-height: -webkit-fill-available;
   height: 100vh;
   height: 100dvh;
+  height: -webkit-fill-available;
   padding-top: 0;
   background-color: #ffffff;
-  position: relative;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -797,6 +810,11 @@ body {
 
   .app-shell,
   .page {
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
     width: 100%;
     max-width: var(--page-max);
     min-height: calc(100dvh - 48px);
@@ -1156,15 +1174,6 @@ body {
     document.body.style.overflow = "hidden";
   }
 
-  function syncPageBg() {
-    const footer = document.getElementById("pageFooter");
-    if (!footer || footer.classList.contains("is-hidden")) {
-      document.documentElement.style.setProperty("--page-footer-h", "0px");
-      return;
-    }
-    document.documentElement.style.setProperty("--page-footer-h", `${footer.offsetHeight}px`);
-  }
-
   function renderLanding() {
     const p = data.profile;
     currentProfile = p;
@@ -1300,6 +1309,8 @@ body {
   });
 
   renderLanding();
+  syncPageBg();
+  window.addEventListener("resize", syncPageBg);
 
 })();
   </script>
