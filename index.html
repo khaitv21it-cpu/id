@@ -80,7 +80,11 @@ body {
 .app-shell,
 .page {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--app-height, 100dvh);
+  max-height: var(--app-height, 100dvh);
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
@@ -247,7 +251,7 @@ body {
   z-index: 2;
   flex-shrink: 0;
   background: #ffffff;
-  padding: 0 var(--side-padding) max(10px, env(safe-area-inset-bottom, 0px));
+  padding: 0 var(--side-padding) 0;
 }
 
 /* Panel content: trong suot — nen nam o .page-body::before */
@@ -1101,6 +1105,14 @@ body {
     if (cardImage.startsWith("data:") || cardImage.startsWith("http")) return cardImage;
     return `/uploads/${encodeURIComponent(cardImage)}`;
   }
+
+  function setAppHeight() {
+    const height = window.visualViewport?.height ?? window.innerHeight;
+    document.documentElement.style.setProperty("--app-height", `${height}px`);
+  }
+  setAppHeight();
+  window.addEventListener("resize", setAppHeight);
+  window.visualViewport?.addEventListener("resize", setAppHeight);
 
   let data = loadData();
   let currentProfile = null;
