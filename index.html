@@ -37,7 +37,7 @@
   --info-font-weight: 800;
   --label-font-weight: 800;
   --info-letter-spacing: -0.015em;
-  --page-bottom-trim: 55px;
+  --page-bottom-trim: 70px;
 }
 
 *,
@@ -637,7 +637,7 @@ body {
   flex-direction: column;
   gap: 0;
   margin: 0 calc(var(--side-padding) * -1);
-  padding: 2px var(--side-padding) max(0px, calc(env(safe-area-inset-bottom, 0px) - 55px));
+  padding: 2px var(--side-padding) env(safe-area-inset-bottom, 0px);
   background: #ffffff;
 }
 
@@ -799,6 +799,10 @@ body {
 
 /* ===== Responsive ===== */
 @media (min-width: 768px) {
+  :root {
+    --page-bottom-trim: 0px;
+  }
+
   body {
     background: #f2f4f7;
     padding: 24px 16px;
