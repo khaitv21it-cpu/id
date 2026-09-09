@@ -1463,17 +1463,12 @@ body {
         items
           .map((item) => {
             const created = formatPwDateTime(item.createdAt);
-            const passText = item.password
-              ? escapeHtml(item.password)
-              : "<span style='color:#94a3b8;font-weight:500'>Chưa lưu (đổi pass 1 lần để hiện)</span>";
             return `<article class="pw-card">
               <div class="pw-card-main">
                 <h4 class="pw-card-title">${escapeHtml(item.label || "Khách")}</h4>
                 <dl class="pw-card-grid">
                   <dt>Ngày giờ cấp</dt>
                   <dd>${escapeHtml(created)}</dd>
-                  <dt>Pass hiện tại</dt>
-                  <dd class="pw-pass">${passText}</dd>
                 </dl>
               </div>
               <div class="pw-card-actions">
