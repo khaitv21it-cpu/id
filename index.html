@@ -78,6 +78,87 @@ body {
   display: none !important;
 }
 
+/* ===== Access gate (mat khau) ===== */
+.access-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: #f4f6f8;
+  font-family: var(--font);
+}
+
+.access-gate-card {
+  width: 100%;
+  max-width: 360px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px 20px 20px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+.access-gate-card h1 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.access-gate-card p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #6b7280;
+}
+
+.access-gate-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.access-gate-card input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 12px 12px;
+  font: inherit;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.access-gate-card button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  background: #0f4c81;
+  cursor: pointer;
+}
+
+.access-gate-card button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.access-gate-error {
+  min-height: 20px;
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
 /* ===== Page shell ===== */
 .app-shell,
 .page {
@@ -506,16 +587,22 @@ body {
 
 .two-column,
 .info-row-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: baseline;
   column-gap: 16px;
   row-gap: 0;
   margin-bottom: 11px;
+  width: 100%;
 }
 
 .two-column .info-row,
 .info-row-2col .info-row {
   margin-bottom: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 /* ===== Link dieu huong trong vung thong tin ===== */
@@ -854,8 +941,8 @@ body {
 @media (max-width: 400px) {
   .two-column,
   .info-row-2col {
-    grid-template-columns: 1fr;
-    row-gap: 11px;
+    flex-wrap: nowrap;
+    column-gap: 10px;
   }
 }
 
