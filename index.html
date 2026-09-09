@@ -15,6 +15,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("web2m_access_token")) {
+          document.documentElement.classList.add("access-has-token");
+        }
+      } catch (_) {}
+    })();
+  </script>
   <style>
 :root {
   --label-color: #2A5565;
@@ -157,6 +166,11 @@ body {
   margin: 0 0 10px;
   font-size: 13px;
   color: #b91c1c;
+}
+
+/* Da co session: khong bao gio flash form nhap pass khi reload */
+html.access-has-token .access-gate {
+  display: none !important;
 }
 
 /* ===== Page shell ===== */
@@ -949,14 +963,14 @@ body {
   </style>
 </head>
 <body>
-<div id="accessGate" class="access-gate" aria-live="polite">
+<div id="accessGate" class="access-gate is-hidden" aria-live="polite">
   <div class="access-gate-card">
     <h1>Nhập mật khẩu</h1>
     <p>Nhập mật khẩu admin đã cấp để xem nội dung.</p>
     <form id="accessGateForm" autocomplete="off">
       <label for="accessPassword">Mật khẩu</label>
       <input id="accessPassword" type="password" maxlength="200" required placeholder="••••••••" />
-      <p id="accessGateError" class="access-gate-error">Đang kiểm tra…</p>
+      <p id="accessGateError" class="access-gate-error"></p>
       <button type="submit" id="accessGateSubmit">Vào xem</button>
     </form>
   </div>
@@ -1512,15 +1526,18 @@ body {
   }
 
   function unlockApp() {
+    document.documentElement.classList.add("access-has-token");
     accessGate?.classList.add("is-hidden");
     appShell?.classList.remove("is-hidden");
     requestAnimationFrame(syncViewportLayout);
     renderLanding();
   }
 
-  function showAccessGate() {
+  function showAccessGate(message) {
+    document.documentElement.classList.remove("access-has-token");
     appShell?.classList.add("is-hidden");
     accessGate?.classList.remove("is-hidden");
+    setAccessError(message || "");
     accessInput?.focus();
   }
 
@@ -1534,6 +1551,19 @@ body {
   }
 
   async function bootstrapAccess() {
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY) || "";
+
+    /* Co token: kiem tra session truoc, khong hien form pass */
+    if (token) {
+      try {
+        if (await checkExistingSession(token)) {
+          unlockApp();
+          return;
+        }
+      } catch (_) {}
+      localStorage.removeItem(ACCESS_TOKEN_KEY);
+    }
+
     try {
       const statusRes = await fetch("/api/access/status");
       if (!statusRes.ok) {
@@ -1545,14 +1575,9 @@ body {
         unlockApp();
         return;
       }
-      const token = localStorage.getItem(ACCESS_TOKEN_KEY) || "";
-      if (token && (await checkExistingSession(token))) {
-        unlockApp();
-        return;
-      }
-      if (token) localStorage.removeItem(ACCESS_TOKEN_KEY);
-      setAccessError(status.count > 0 ? "" : "Chưa có mật khẩu — liên hệ admin.");
-      showAccessGate();
+      showAccessGate(
+        status.count > 0 ? "" : "Chưa có mật khẩu — liên hệ admin."
+      );
     } catch (_) {
       unlockApp();
     }
