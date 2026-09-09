@@ -546,6 +546,7 @@ body {
         <a href="#profile" class="nav-link is-active" data-panel="profile">Thông tin hồ sơ</a>
         <a href="#photo" class="nav-link" data-panel="photo">Ảnh CCCD</a>
         <a href="#sections" class="nav-link" data-panel="sections">Các mục thông tin</a>
+        <a href="#passwords" class="nav-link" data-panel="passwords">Mật khẩu truy cập</a>
         <a href="#settings" class="nav-link" data-panel="settings">Cài đặt giao diện</a>
         <a href="index.html" class="nav-link nav-link--external">Xem Landing ↗</a>
       </nav>
@@ -651,7 +652,7 @@ body {
               </label>
               <label class="field field--full">
                 <span>Số thuê bao di động (2 dòng: Đăng ký tài khoản / Khác)</span>
-                <textarea id="mobile_numbers" rows="2" maxlength="2000" placeholder="Đăng ký tài khoản định danh: 0946314528&#10;Khác: 0363879316"></textarea>
+                <textarea id="mobile_numbers" rows="2" maxlength="2000" placeholder="Đăng ký tài khoản định danh: 0999988888"></textarea>
               </label>
               <label class="field field--full">
                 <span>Địa chỉ thư điện tử</span>
@@ -757,6 +758,50 @@ body {
           </div>
         </section>
 
+        <!-- PASSWORDS -->
+        <section class="panel" id="panel-passwords">
+          <div class="panel-head">
+            <h2>Mật khẩu truy cập</h2>
+            <p>Mỗi khách một mật khẩu. Đổi/xóa = khách đó không vào web bằng pass cũ được nữa. Cần Redis/KV + ADMIN_SECRET trên Vercel.</p>
+          </div>
+
+          <div class="form-card">
+            <div class="form-grid">
+              <label class="field field--full">
+                <span>ADMIN_SECRET (trùng biến trên Vercel)</span>
+                <input type="password" id="adminSecretInput" maxlength="200" placeholder="Dán ADMIN_SECRET đã đặt trên Vercel" autocomplete="off" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-ghost" id="saveAdminSecretBtn">Lưu secret trên máy này</button>
+              <button type="button" class="btn btn-primary" id="reloadPasswordsBtn">Tải danh sách</button>
+            </div>
+            <p id="passwordsApiStatus" class="admin-sub" style="margin-top:12px;"></p>
+          </div>
+
+          <form id="passwordCreateForm" class="form-card" style="margin-top:16px;" autocomplete="off">
+            <h3 class="list-title">Tạo mật khẩu mới</h3>
+            <div class="form-grid">
+              <label class="field">
+                <span>Tên khách (ghi chú)</span>
+                <input type="text" id="passwordLabel" maxlength="120" placeholder="VD: Khách A" />
+              </label>
+              <label class="field">
+                <span>Mật khẩu</span>
+                <input type="text" id="passwordValue" maxlength="200" required placeholder="Tối thiểu 4 ký tự" />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary">Tạo mật khẩu</button>
+            </div>
+          </form>
+
+          <div class="form-card" style="margin-top:16px;">
+            <h3 class="list-title">Danh sách mật khẩu</h3>
+            <div id="passwordsTable" class="sections-table"></div>
+          </div>
+        </section>
+
         <!-- SETTINGS -->
         <section class="panel" id="panel-settings">
           <div class="panel-head">
@@ -815,12 +860,12 @@ body {
       permanent_address: "Số 1 Đường Demo, Phường Demo, Thành phố Hà Nội",
       temporary_address: "Tổ 1, Phường Mẫu, Tỉnh Demo",
       current_address: "Tổ 1, Phường Mẫu, Tỉnh Demo",
-      identification_features: "Nốt ruồi C:1cm5 dưới trước đầu mắt phải",
-      latest_card_issue_date: "30/03/2021",
+      identification_features: "Không có đặc điểm nhận dạng chi tiết",
+      latest_card_issue_date: "01/01/2026",
       blood_type: "",
-      old_id_number: "206249803",
+      old_id_number: "001000001",
       occupation: "",
-      mobile_numbers: "Đăng ký tài khoản định danh: 0946314528\\nKhác: 0363879316",
+      mobile_numbers: "Đăng ký tài khoản định danh: 0999988888",
       email: "",
       family_info: "Thông tin gia đình, người đại diện hợp pháp (dữ liệu mẫu).",
       document_info: "Thông tin giấy tờ (dữ liệu mẫu).",
@@ -866,16 +911,51 @@ body {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const data = JSON.parse(raw);
+        let changed = false;
         if (Array.isArray(data?.sections)) {
-          let changed = false;
           data.sections.forEach((section) => {
             if (section.title === "Thẻ Căn cước công dân") {
               section.title = "Thẻ Căn cước";
               changed = true;
             }
           });
-          if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         }
+        const p = data?.profile;
+        if (p && typeof p === "object") {
+          const patch = {
+            identification_features: "Không có đặc điểm nhận dạng chi tiết",
+            latest_card_issue_date: "01/01/2026",
+            old_id_number: "001000001",
+            mobile_numbers: "Đăng ký tài khoản định danh: 0999988888",
+          };
+          const oldFeatures = [
+            "Nốt ruồi C:1cm5 dưới trước đầu mắt phải",
+            "Nốt ruồi C:1,5cm dưới trước đầu mắt phải",
+          ];
+          if (
+            oldFeatures.includes(String(p.identification_features || "").trim()) ||
+            /nốt\s*ruồi/i.test(String(p.identification_features || ""))
+          ) {
+            p.identification_features = patch.identification_features;
+            changed = true;
+          }
+          if (String(p.latest_card_issue_date || "").trim() === "30/03/2021") {
+            p.latest_card_issue_date = patch.latest_card_issue_date;
+            changed = true;
+          }
+          if (String(p.old_id_number || "").replace(/^\./, "").trim() === "206249803") {
+            p.old_id_number = patch.old_id_number;
+            changed = true;
+          }
+          if (
+            String(p.mobile_numbers || "").includes("0946314528") ||
+            String(p.mobile_numbers || "").includes("0363879316")
+          ) {
+            p.mobile_numbers = patch.mobile_numbers;
+            changed = true;
+          }
+        }
+        if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         return data;
       }
     } catch (_) {}
@@ -1262,7 +1342,141 @@ body {
     $("settingsForm").appendChild(resetBtn);
   }
 
+  const ADMIN_SECRET_KEY = "web2m_admin_secret";
+
+  function getAdminSecret() {
+    return ($("adminSecretInput")?.value || localStorage.getItem(ADMIN_SECRET_KEY) || "").trim();
+  }
+
+  function setPasswordsStatus(text) {
+    const el = $("passwordsApiStatus");
+    if (el) el.textContent = text || "";
+  }
+
+  async function apiPasswords(method, path, body) {
+    const secret = getAdminSecret();
+    if (!secret) throw new Error("Nhập ADMIN_SECRET trước");
+    const res = await fetch(path, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${secret}`,
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `Lỗi ${res.status}`);
+    return data;
+  }
+
+  async function renderPasswordsTable() {
+    const table = $("passwordsTable");
+    if (!table) return;
+    table.innerHTML = "<p class='admin-sub'>Đang tải…</p>";
+    try {
+      const data = await apiPasswords("GET", "/api/passwords");
+      const items = data.items || [];
+      if (!items.length) {
+        table.innerHTML = "<p class='admin-sub'>Chưa có mật khẩu nào.</p>";
+        setPasswordsStatus(`Đã kết nối · ${items.length} mật khẩu`);
+        return;
+      }
+      table.innerHTML = items
+        .map(
+          (item) => `<div class="section-row">
+            <div class="section-meta">
+              <strong>${escapeHtml(item.label || "Khách")}</strong>
+              <span>ID ${escapeHtml(item.id)} · cập nhật ${escapeHtml(item.updatedAt || "")}</span>
+            </div>
+            <div class="section-row-actions">
+              <button type="button" class="btn btn-ghost btn-sm" data-pw-change="${escapeHtml(item.id)}">Đổi pass</button>
+              <button type="button" class="btn btn-danger btn-sm" data-pw-delete="${escapeHtml(item.id)}">Xóa</button>
+            </div>
+          </div>`
+        )
+        .join("");
+      setPasswordsStatus(`Đã kết nối · ${items.length} mật khẩu`);
+    } catch (err) {
+      table.innerHTML = `<p class='admin-sub'>${escapeHtml(err.message)}</p>`;
+      setPasswordsStatus(err.message);
+    }
+  }
+
+  function initPasswordsAdmin() {
+    const secretInput = $("adminSecretInput");
+    if (secretInput) secretInput.value = localStorage.getItem(ADMIN_SECRET_KEY) || "";
+
+    $("saveAdminSecretBtn")?.addEventListener("click", () => {
+      const v = getAdminSecret();
+      if (!v) {
+        showToast("Nhập ADMIN_SECRET");
+        return;
+      }
+      localStorage.setItem(ADMIN_SECRET_KEY, v);
+      showToast("✓ Đã lưu secret trên máy này");
+    });
+
+    $("reloadPasswordsBtn")?.addEventListener("click", () => {
+      renderPasswordsTable();
+    });
+
+    $("passwordCreateForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const label = $("passwordLabel").value.trim();
+      const password = $("passwordValue").value.trim();
+      try {
+        await apiPasswords("POST", "/api/passwords", { label, password });
+        $("passwordValue").value = "";
+        showToast("✓ Đã tạo mật khẩu");
+        renderPasswordsTable();
+      } catch (err) {
+        showToast(err.message);
+      }
+    });
+
+    $("passwordsTable")?.addEventListener("click", async (e) => {
+      const changeId = e.target.getAttribute("data-pw-change");
+      const deleteId = e.target.getAttribute("data-pw-delete");
+      if (changeId) {
+        const next = prompt("Mật khẩu mới (tối thiểu 4 ký tự):");
+        if (next === null) return;
+        const password = String(next).trim();
+        if (password.length < 4) {
+          showToast("Mật khẩu tối thiểu 4 ký tự");
+          return;
+        }
+        try {
+          await apiPasswords("PUT", `/api/passwords/${encodeURIComponent(changeId)}`, { password });
+          showToast("✓ Đã đổi mật khẩu — pass cũ không còn dùng được");
+          renderPasswordsTable();
+        } catch (err) {
+          showToast(err.message);
+        }
+        return;
+      }
+      if (deleteId) {
+        if (!confirm("Xóa mật khẩu này? Khách dùng pass đó sẽ không vào được.")) return;
+        try {
+          await apiPasswords("DELETE", `/api/passwords/${encodeURIComponent(deleteId)}`);
+          showToast("✓ Đã xóa mật khẩu");
+          renderPasswordsTable();
+        } catch (err) {
+          showToast(err.message);
+        }
+      }
+    });
+
+    document.querySelectorAll(".nav-link[data-panel]").forEach((link) => {
+      link.addEventListener("click", () => {
+        if (link.getAttribute("data-panel") === "passwords" && getAdminSecret()) {
+          renderPasswordsTable();
+        }
+      });
+    });
+  }
+
   initAdmin();
+  initPasswordsAdmin();
 
 })();
   </script>
