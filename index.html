@@ -1575,9 +1575,7 @@ html.access-has-token .access-gate {
         unlockApp();
         return;
       }
-      showAccessGate(
-        status.count > 0 ? "" : "Chưa có mật khẩu — liên hệ admin."
-      );
+      showAccessGate("");
     } catch (_) {
       unlockApp();
     }
@@ -1600,7 +1598,10 @@ html.access-has-token .access-gate {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setAccessError(data.error || "Mật khẩu không đúng");
+        const raw = String(data.error || "");
+        setAccessError(
+          /chưa có mật khẩu/i.test(raw) ? "Mật khẩu không đúng" : raw || "Mật khẩu không đúng"
+        );
         return;
       }
       localStorage.setItem(ACCESS_TOKEN_KEY, data.token || "");
