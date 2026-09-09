@@ -949,7 +949,19 @@ body {
   </style>
 </head>
 <body>
-<div class="page app-shell">
+<div id="accessGate" class="access-gate" aria-live="polite">
+  <div class="access-gate-card">
+    <h1>Nhập mật khẩu</h1>
+    <p>Nhập mật khẩu admin đã cấp để xem nội dung.</p>
+    <form id="accessGateForm" autocomplete="off">
+      <label for="accessPassword">Mật khẩu</label>
+      <input id="accessPassword" type="password" maxlength="200" required placeholder="••••••••" />
+      <p id="accessGateError" class="access-gate-error">Đang kiểm tra…</p>
+      <button type="submit" id="accessGateSubmit">Vào xem</button>
+    </form>
+  </div>
+</div>
+<div class="page app-shell is-hidden" id="appShell">
     <div class="page-body">
     <div class="page-header-band">
       <header class="header top-header">
@@ -1487,7 +1499,96 @@ body {
     openInfoModal("Thông tin giấy tờ", currentProfile.document_info);
   });
 
-  renderLanding();
+  const ACCESS_TOKEN_KEY = "web2m_access_token";
+  const accessGate = document.getElementById("accessGate");
+  const appShell = document.getElementById("appShell");
+  const accessForm = document.getElementById("accessGateForm");
+  const accessInput = document.getElementById("accessPassword");
+  const accessError = document.getElementById("accessGateError");
+  const accessSubmit = document.getElementById("accessGateSubmit");
+
+  function setAccessError(msg) {
+    if (accessError) accessError.textContent = msg || "";
+  }
+
+  function unlockApp() {
+    accessGate?.classList.add("is-hidden");
+    appShell?.classList.remove("is-hidden");
+    requestAnimationFrame(syncViewportLayout);
+    renderLanding();
+  }
+
+  function showAccessGate() {
+    appShell?.classList.add("is-hidden");
+    accessGate?.classList.remove("is-hidden");
+    accessInput?.focus();
+  }
+
+  async function checkExistingSession(token) {
+    const res = await fetch("/api/access/session", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return !!data.ok;
+  }
+
+  async function bootstrapAccess() {
+    try {
+      const statusRes = await fetch("/api/access/status");
+      if (!statusRes.ok) {
+        unlockApp();
+        return;
+      }
+      const status = await statusRes.json();
+      if (!status.gate) {
+        unlockApp();
+        return;
+      }
+      const token = localStorage.getItem(ACCESS_TOKEN_KEY) || "";
+      if (token && (await checkExistingSession(token))) {
+        unlockApp();
+        return;
+      }
+      if (token) localStorage.removeItem(ACCESS_TOKEN_KEY);
+      setAccessError(status.count > 0 ? "" : "Chưa có mật khẩu — liên hệ admin.");
+      showAccessGate();
+    } catch (_) {
+      unlockApp();
+    }
+  }
+
+  accessForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const password = (accessInput?.value || "").trim();
+    if (!password) {
+      setAccessError("Nhập mật khẩu");
+      return;
+    }
+    accessSubmit.disabled = true;
+    setAccessError("");
+    try {
+      const res = await fetch("/api/access/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setAccessError(data.error || "Mật khẩu không đúng");
+        return;
+      }
+      localStorage.setItem(ACCESS_TOKEN_KEY, data.token || "");
+      accessInput.value = "";
+      unlockApp();
+    } catch (_) {
+      setAccessError("Không kết nối được máy chủ");
+    } finally {
+      accessSubmit.disabled = false;
+    }
+  });
+
+  bootstrapAccess();
 
 })();
   </script>
