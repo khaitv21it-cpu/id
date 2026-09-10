@@ -1,6 +1,8 @@
 const crypto = require("crypto");
 
 const SESSION_TTL_SEC = 60 * 60 * 24 * 7;
+const ADMIN_GATE_ID = "__admin_gate__";
+const ADMIN_GATE_STAMP = "admin-fixed-v1";
 
 function sessionSecret() {
   return (
@@ -8,6 +10,29 @@ function sessionSecret() {
     process.env.ADMIN_SECRET ||
     "dev-insecure-secret"
   );
+}
+
+function getAdminGatePassword() {
+  return String(
+    process.env.ADMIN_GATE_PASSWORD || process.env.ADMIN_SECRET || ""
+  ).trim();
+}
+
+function safeEqualString(a, b) {
+  const x = Buffer.from(String(a));
+  const y = Buffer.from(String(b));
+  if (x.length !== y.length) return false;
+  try {
+    return crypto.timingSafeEqual(x, y);
+  } catch {
+    return false;
+  }
+}
+
+function matchesAdminGatePassword(password) {
+  const expected = getAdminGatePassword();
+  if (!expected || !password) return false;
+  return safeEqualString(password, expected);
 }
 
 function b64url(input) {
@@ -40,6 +65,13 @@ function createSessionToken(item) {
   return `${b64url(body)}.${sign(body)}`;
 }
 
+function createAdminGateToken() {
+  return createSessionToken({
+    id: ADMIN_GATE_ID,
+    updatedAt: ADMIN_GATE_STAMP,
+  });
+}
+
 function parseSessionToken(token) {
   if (!token || typeof token !== "string") return null;
   const parts = token.split(".");
@@ -59,6 +91,14 @@ function parseSessionToken(token) {
   if (!id || !updatedAt || !Number.isFinite(exp)) return null;
   if (exp < Math.floor(Date.now() / 1000)) return null;
   return { id, updatedAt, exp };
+}
+
+function isAdminGateSession(parsed) {
+  return (
+    parsed &&
+    parsed.id === ADMIN_GATE_ID &&
+    String(parsed.updatedAt) === ADMIN_GATE_STAMP
+  );
 }
 
 function requireAdmin(req) {
@@ -115,8 +155,13 @@ function sendJson(res, status, data) {
 
 module.exports = {
   SESSION_TTL_SEC,
+  ADMIN_GATE_ID,
   createSessionToken,
+  createAdminGateToken,
   parseSessionToken,
+  isAdminGateSession,
+  matchesAdminGatePassword,
+  getAdminGatePassword,
   requireAdmin,
   readJson,
   sendJson,
