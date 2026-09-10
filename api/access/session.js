@@ -1,6 +1,11 @@
 const { isStoreConfigured } = require("../_lib/redis");
 const { listPasswords } = require("../_lib/passwords");
-const { parseSessionToken, sendJson } = require("../_lib/session");
+const {
+  parseSessionToken,
+  isAdminGateSession,
+  getAdminGatePassword,
+  sendJson,
+} = require("../_lib/session");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "GET") {
@@ -22,11 +27,16 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const items = await listPasswords();
-    if (!items.length) {
-      sendJson(res, 401, { ok: false, error: "Không còn mật khẩu hợp lệ" });
+    if (isAdminGateSession(parsed)) {
+      if (!getAdminGatePassword()) {
+        sendJson(res, 401, { ok: false, error: "Pass admin chưa cấu hình" });
+        return;
+      }
+      sendJson(res, 200, { ok: true, gate: true, label: "Admin" });
       return;
     }
+
+    const items = await listPasswords();
     const item = items.find((x) => x.id === parsed.id);
     if (!item) {
       sendJson(res, 401, { ok: false, error: "Mật khẩu đã bị xóa" });
