@@ -26,7 +26,7 @@
   </script>
   <style>
 :root {
-  --label-color: #2A5565;
+  --label-color: #1A4A5C;
   --value-color: #383838;
   --muted-color: #a8a8a8;
   --accent-red: #d71920;
@@ -42,7 +42,7 @@
   --page-max: 544px;
   --side-padding: 16px;
   --font: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --info-font-size: 14px;
+  --info-font-size: 14.5px;
   --header-font-size: 18px;
   --info-font-weight: 900;
   --label-font-weight: 900;
@@ -177,14 +177,7 @@ html.access-has-token .access-gate {
 .app-shell,
 .page {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  /* top+bottom stretch full screen — avoid short --app-height leaving a gap */
-  height: auto;
-  max-height: none;
-  min-height: -webkit-fill-available;
+  inset: 0;
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
@@ -760,7 +753,8 @@ html.access-has-token .access-gate {
   flex-direction: column;
   gap: 0;
   margin: 0 calc(var(--side-padding) * -1);
-  padding: 2px var(--side-padding) max(8px, env(safe-area-inset-bottom, 0px));
+  /* Sat day man: tru bot safe-area de khong du trang lon duoi menu */
+  padding: 2px var(--side-padding) max(2px, calc(env(safe-area-inset-bottom, 0px) - 22px));
   background: #ffffff;
 }
 
@@ -934,9 +928,11 @@ html.access-has-token .access-gate {
   .app-shell,
   .page {
     position: relative;
+    inset: auto;
     top: auto;
     left: auto;
     right: auto;
+    bottom: auto;
     height: calc(100dvh - 48px);
     max-height: none;
     width: 100%;
