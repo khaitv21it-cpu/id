@@ -69,7 +69,7 @@ body {
   min-height: 100%;
   min-height: 100dvh;
   min-height: -webkit-fill-available;
-  background: #ffffff;
+  background: #e8e0d4;
   font-family: var(--font);
   color: var(--value-color);
   -webkit-font-smoothing: antialiased;
@@ -180,8 +180,10 @@ html.access-has-token .access-gate {
   top: 0;
   left: 0;
   right: 0;
+  bottom: 0;
   height: calc(var(--app-height, 100dvh) - var(--page-bottom-trim, 0px));
   max-height: calc(var(--app-height, 100dvh) - var(--page-bottom-trim, 0px));
+  min-height: -webkit-fill-available;
   width: 100%;
   max-width: var(--page-max);
   margin: 0 auto;
@@ -1279,7 +1281,18 @@ html.access-has-token .access-gate {
   }
 
   function setAppHeight() {
-    const height = window.visualViewport?.height ?? window.innerHeight;
+    const vv = window.visualViewport;
+    const candidates = [
+      window.innerHeight,
+      document.documentElement.clientHeight,
+    ];
+    if (vv) {
+      candidates.push(Math.round(vv.height));
+      candidates.push(Math.round(vv.height + vv.offsetTop));
+    }
+    const height = Math.max(
+      ...candidates.filter((n) => Number.isFinite(n) && n > 0)
+    );
     document.documentElement.style.setProperty("--app-height", `${height}px`);
   }
   function syncPageBackground() {
@@ -1310,6 +1323,11 @@ html.access-has-token .access-gate {
   syncViewportLayout();
   window.addEventListener("resize", syncViewportLayout);
   window.visualViewport?.addEventListener("resize", syncViewportLayout);
+  window.visualViewport?.addEventListener("scroll", syncViewportLayout);
+  window.addEventListener("orientationchange", () => {
+    setTimeout(syncViewportLayout, 50);
+    setTimeout(syncViewportLayout, 300);
+  });
   requestAnimationFrame(syncViewportLayout);
   const pageBody = document.querySelector(".page-body");
   if (pageBody && window.ResizeObserver) {
