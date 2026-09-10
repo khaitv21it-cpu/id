@@ -3,7 +3,13 @@ const {
   listPasswords,
   verifyPassword,
 } = require("../_lib/passwords");
-const { createSessionToken, readJson, sendJson } = require("../_lib/session");
+const {
+  createSessionToken,
+  createAdminGateToken,
+  matchesAdminGatePassword,
+  readJson,
+  sendJson,
+} = require("../_lib/session");
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
@@ -31,17 +37,22 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const items = await listPasswords();
-    if (!items.length) {
-      sendJson(res, 403, { error: "Chưa có mật khẩu nào được cấp. Liên hệ admin." });
+    /* Pass co dinh cua admin — khong nam trong danh sach quan ly */
+    if (matchesAdminGatePassword(password)) {
+      sendJson(res, 200, {
+        ok: true,
+        token: createAdminGateToken(),
+        label: "Admin",
+      });
       return;
     }
 
+    const items = await listPasswords();
     const matched = items.find((item) =>
       verifyPassword(password, item.salt, item.hash)
     );
     if (!matched) {
-      sendJson(res, 401, { error: "Mật khẩu không đúng hoặc đã bị thu hồi" });
+      sendJson(res, 401, { error: "Mật khẩu không đúng" });
       return;
     }
 
