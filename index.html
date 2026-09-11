@@ -764,7 +764,7 @@ html.access-has-token .access-gate {
 .section-item,
 .action-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   width: 100%;
   padding: 0;
@@ -791,7 +791,7 @@ html.access-has-token .access-gate {
 .action-icon {
   width: 22px;
   height: 22px;
-  margin-top: 1px;
+  margin-top: 0;
   border-radius: 50%;
   background: var(--accent-red);
   color: #ffffff;
@@ -915,6 +915,34 @@ html.access-has-token .access-gate {
   line-height: 1.55;
   color: var(--value-color);
   font-weight: 400;
+}
+
+/* Mobile: sat day nhu PC — bot khoang trang duoi menu footer */
+@media (max-width: 767px) {
+  .page-footer {
+    padding: 0 var(--side-padding) 0;
+  }
+
+  .updated-row {
+    padding: 8px 0 4px;
+  }
+
+  .section-list,
+  .footer-actions {
+    /* Gan nhu 0: tru bot safe-area de day can nhu PC */
+    padding: 0 var(--side-padding) max(2px, calc(env(safe-area-inset-bottom, 0px) - 32px));
+  }
+
+  .section-item,
+  .action-item {
+    margin-bottom: 10px;
+  }
+
+  .section-item:last-child,
+  .action-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
 }
 
 /* ===== Responsive ===== */
