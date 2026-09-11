@@ -728,7 +728,7 @@ html.access-has-token .access-gate {
   align-items: center;
   gap: 12px;
   margin: 0;
-  padding: 10px 0 6px;
+  padding: 19px 0 6px;
   background: #ffffff;
 }
 
@@ -757,7 +757,7 @@ html.access-has-token .access-gate {
   gap: 0;
   margin: 0 calc(var(--side-padding) * -1);
   /* Sat day man: tru bot safe-area de khong du trang lon duoi menu */
-  padding: 2px var(--side-padding) 0;
+  padding: 8px var(--side-padding) 0;
   background: #ffffff;
 }
 
@@ -783,8 +783,21 @@ html.access-has-token .access-gate {
   margin-bottom: 0;
 }
 
+.section-item.action-item--static,
+.action-item--static {
+  cursor: default;
+  pointer-events: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .section-item:hover {
   opacity: 0.88;
+}
+
+.section-item.action-item--static:hover,
+.action-item--static:hover {
+  opacity: 1;
 }
 
 .section-icon,
@@ -924,13 +937,13 @@ html.access-has-token .access-gate {
   }
 
   .updated-row {
-    padding: 8px 0 4px;
+    padding: 17px 0 4px;
   }
 
   .section-list,
   .footer-actions {
     /* Gan nhu 0: tru bot safe-area de day can nhu PC */
-    padding: 0 var(--side-padding) max(2px, calc(env(safe-area-inset-bottom, 0px) - 32px));
+    padding: 8px var(--side-padding) max(2px, calc(env(safe-area-inset-bottom, 0px) - 32px));
   }
 
   .section-item,
@@ -1456,12 +1469,11 @@ html.access-has-token .access-gate {
       .forEach((section) => {
         const displayTitle =
           section.title === "Thẻ Căn cước công dân" ? "Thẻ Căn cước" : section.title;
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "section-item action-item";
-        btn.innerHTML = `<span class="section-icon action-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h12.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round"/><path d="M10 4.5L19.5 12 10 19.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="section-title action-title">${escapeHtml(displayTitle)}</span>`;
-        btn.addEventListener("click", () => openModal({ ...section, title: displayTitle }));
-        list.appendChild(btn);
+        const row = document.createElement("div");
+        row.className = "section-item action-item action-item--static";
+        row.setAttribute("role", "presentation");
+        row.innerHTML = `<span class="section-icon action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h12.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round"/><path d="M10 4.5L19.5 12 10 19.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="section-title action-title">${escapeHtml(displayTitle)}</span>`;
+        list.appendChild(row);
       });
 
     document.getElementById("loadingState").classList.add("is-hidden");
