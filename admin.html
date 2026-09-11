@@ -647,21 +647,21 @@ body {
             <p>CRUD đầy đủ. Sau khi lưu, trang Landing cập nhật ngay.</p>
           </div>
 
-          <form id="profileForm" class="form-card" autocomplete="off">
+          <form id="profileForm" class="form-card" autocomplete="off" novalidate>
             <input type="hidden" id="profileId" />
 
             <div class="form-grid">
               <label class="field">
                 <span>Số định danh cá nhân</span>
-                <input type="text" id="id_number" maxlength="20" required />
+                <input type="text" id="id_number" />
               </label>
               <label class="field">
                 <span>Họ, chữ đệm và tên</span>
-                <input type="text" id="full_name" maxlength="200" required />
+                <input type="text" id="full_name" />
               </label>
               <label class="field">
                 <span>Ngày sinh</span>
-                <input type="text" id="date_of_birth" maxlength="20" placeholder="DD/MM/YYYY" />
+                <input type="text" id="date_of_birth" placeholder="DD/MM/YYYY" />
               </label>
               <label class="field">
                 <span>Giới tính</span>
@@ -673,75 +673,75 @@ body {
               </label>
               <label class="field">
                 <span>Quốc tịch</span>
-                <input type="text" id="nationality" maxlength="100" />
+                <input type="text" id="nationality" />
               </label>
               <label class="field">
                 <span>Nơi sinh</span>
-                <input type="text" id="birthplace" maxlength="300" />
+                <input type="text" id="birthplace" />
               </label>
               <label class="field field--full">
                 <span>Nơi đăng ký khai sinh</span>
-                <input type="text" id="birth_registration_place" maxlength="300" />
+                <input type="text" id="birth_registration_place" />
               </label>
               <label class="field field--full">
                 <span>Quê quán</span>
-                <input type="text" id="hometown" maxlength="300" />
+                <input type="text" id="hometown" />
               </label>
               <label class="field">
                 <span>Dân tộc</span>
-                <input type="text" id="ethnicity" maxlength="100" />
+                <input type="text" id="ethnicity" />
               </label>
               <label class="field">
                 <span>Tôn giáo</span>
-                <input type="text" id="religion" maxlength="100" />
+                <input type="text" id="religion" />
               </label>
               <label class="field field--full">
                 <span>Nơi thường trú</span>
-                <input type="text" id="permanent_address" maxlength="500" />
+                <input type="text" id="permanent_address" />
               </label>
               <label class="field field--full">
                 <span>Nơi tạm trú</span>
-                <input type="text" id="temporary_address" maxlength="500" />
+                <input type="text" id="temporary_address" />
               </label>
               <label class="field field--full">
                 <span>Nơi ở hiện tại</span>
-                <input type="text" id="current_address" maxlength="500" />
+                <input type="text" id="current_address" />
               </label>
               <label class="field field--full">
                 <span>Đặc điểm nhận dạng</span>
-                <textarea id="identification_features" rows="3" maxlength="2000"></textarea>
+                <textarea id="identification_features" rows="3"></textarea>
               </label>
               <label class="field">
                 <span>Ngày cấp CCCD gần nhất</span>
-                <input type="text" id="latest_card_issue_date" maxlength="20" placeholder="DD/MM/YYYY" />
+                <input type="text" id="latest_card_issue_date" placeholder="DD/MM/YYYY" />
               </label>
               <label class="field">
                 <span>Nhóm máu</span>
-                <input type="text" id="blood_type" maxlength="20" />
+                <input type="text" id="blood_type" />
               </label>
               <label class="field">
                 <span>Số CMND 9 số</span>
-                <input type="text" id="old_id_number" maxlength="20" />
+                <input type="text" id="old_id_number" />
               </label>
               <label class="field field--full">
                 <span>Nghề nghiệp</span>
-                <input type="text" id="occupation" maxlength="200" />
+                <input type="text" id="occupation" />
               </label>
               <label class="field field--full">
                 <span>Số thuê bao di động (2 dòng: Đăng ký tài khoản / Khác)</span>
-                <textarea id="mobile_numbers" rows="2" maxlength="2000" placeholder="Đăng ký tài khoản định danh: 0999988888"></textarea>
+                <textarea id="mobile_numbers" rows="2" placeholder="Đăng ký tài khoản định danh: 0999988888"></textarea>
               </label>
               <label class="field field--full">
                 <span>Địa chỉ thư điện tử</span>
-                <input type="text" id="email" inputmode="email" autocomplete="email" maxlength="200" placeholder="Có thể để trống" />
+                <input type="text" id="email" inputmode="email" autocomplete="email" placeholder="Có thể để trống" />
               </label>
               <label class="field field--full">
                 <span>Thông tin gia đình (nội dung modal)</span>
-                <textarea id="family_info" rows="3" maxlength="5000"></textarea>
+                <textarea id="family_info" rows="3"></textarea>
               </label>
               <label class="field field--full">
                 <span>Thông tin giấy tờ (nội dung modal)</span>
-                <textarea id="document_info" rows="3" maxlength="5000"></textarea>
+                <textarea id="document_info" rows="3"></textarea>
               </label>
             </div>
 
@@ -997,41 +997,6 @@ body {
             }
           });
         }
-        const p = data?.profile;
-        if (p && typeof p === "object") {
-          const patch = {
-            identification_features: "Không có đặc điểm nhận dạng chi tiết",
-            latest_card_issue_date: "01/01/2026",
-            old_id_number: "001000001",
-            mobile_numbers: "Đăng ký tài khoản định danh: 0999988888",
-          };
-          const oldFeatures = [
-            "Nốt ruồi C:1cm5 dưới trước đầu mắt phải",
-            "Nốt ruồi C:1,5cm dưới trước đầu mắt phải",
-          ];
-          if (
-            oldFeatures.includes(String(p.identification_features || "").trim()) ||
-            /nốt\s*ruồi/i.test(String(p.identification_features || ""))
-          ) {
-            p.identification_features = patch.identification_features;
-            changed = true;
-          }
-          if (String(p.latest_card_issue_date || "").trim() === "30/03/2021") {
-            p.latest_card_issue_date = patch.latest_card_issue_date;
-            changed = true;
-          }
-          if (String(p.old_id_number || "").replace(/^\./, "").trim() === "206249803") {
-            p.old_id_number = patch.old_id_number;
-            changed = true;
-          }
-          if (
-            String(p.mobile_numbers || "").includes("0946314528") ||
-            String(p.mobile_numbers || "").includes("0363879316")
-          ) {
-            p.mobile_numbers = patch.mobile_numbers;
-            changed = true;
-          }
-        }
         if (changed) localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
         return data;
       }
@@ -1268,9 +1233,14 @@ body {
     });
     $("sidebarBackdrop").addEventListener("click", closeMobileSidebar);
 
-    $("profileForm").addEventListener("submit", (e) => {
+    $("profileForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const active = document.activeElement;
+      if (active && typeof active.blur === "function") active.blur();
+      // iOS + go tieng Viet: doi IME commit xong roi moi doc textarea
+      await new Promise((r) => setTimeout(r, 80));
       const payload = getProfilePayload();
+      payload.identification_features = ($("identification_features")?.value || "").trim();
       if (data.profile) {
         Object.assign(data.profile, payload, { updated_at: nowIso() });
       } else {
