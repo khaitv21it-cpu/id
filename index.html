@@ -434,9 +434,9 @@ html.access-has-token .access-gate {
 }
 
 .cccd-card-frame--has-image {
-  border: 1.5px solid rgba(0, 0, 0, 0.06);
-  background: #f8fafc;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 0;
+  background: #ffffff;
+  box-shadow: none;
 }
 
 .card-image,
@@ -446,8 +446,11 @@ html.access-has-token .access-gate {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  max-width: none;
+  max-height: none;
+  /* Hien thi tron anh upload — khong cat goc */
+  object-fit: contain;
+  object-position: center center;
 }
 
 .cccd-placeholder {
