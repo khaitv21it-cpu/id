@@ -733,7 +733,7 @@ body {
               </label>
               <label class="field field--full">
                 <span>Địa chỉ thư điện tử</span>
-                <input type="email" id="email" maxlength="200" />
+                <input type="text" id="email" inputmode="email" autocomplete="email" maxlength="200" placeholder="Có thể để trống" />
               </label>
               <label class="field field--full">
                 <span>Thông tin gia đình (nội dung modal)</span>
@@ -839,7 +839,7 @@ body {
         <section class="panel" id="panel-passwords">
           <div class="panel-head">
             <h2>Mật khẩu truy cập</h2>
-            <p>Mỗi khách một mật khẩu. Đổi/xóa = khách đó không vào web bằng pass cũ được nữa. Cần Redis/KV + ADMIN_SECRET trên Vercel.</p>
+            <p>Mỗi khách một mật khẩu (hiện trong danh sách). Đổi/xóa = khách đó không vào được. Pass cố định của admin = giá trị <code>ADMIN_SECRET</code> trên Vercel — dùng vào trang chủ, không hiện trong danh sách.</p>
           </div>
 
           <div class="form-card">
