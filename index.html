@@ -15,6 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@900&display=swap" rel="stylesheet" />
   <script>
     (function () {
       try {
@@ -43,7 +44,7 @@
   --side-padding: 16px;
   --font: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --info-font-size: 14.5px;
-  --header-font-size: 18px;
+  --header-font-size: 19px;
   --info-font-weight: 900;
   --label-font-weight: 900;
   --info-letter-spacing: -0.015em;
@@ -287,6 +288,7 @@ html.access-has-token .access-gate {
 
 .header-title {
   margin: 0 0 0 10px;
+  font-family: "Be Vietnam Pro", var(--font);
   font-size: var(--header-font-size);
   line-height: 1.2;
   font-weight: 900;
@@ -741,7 +743,7 @@ html.access-has-token .access-gate {
 
 .updated-value {
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 900;
   color: var(--value-color);
   line-height: 1.35;
   white-space: nowrap;
@@ -825,7 +827,7 @@ html.access-has-token .access-gate {
 .section-title,
 .action-title {
   font-size: var(--info-font-size);
-  font-weight: var(--info-font-weight);
+  font-weight: 1000;
   color: var(--title-color);
   line-height: 1.35;
   letter-spacing: var(--info-letter-spacing);
@@ -1472,7 +1474,7 @@ html.access-has-token .access-gate {
         const row = document.createElement("div");
         row.className = "section-item action-item action-item--static";
         row.setAttribute("role", "presentation");
-        row.innerHTML = `<span class="section-icon action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h12.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round"/><path d="M10 4.5L19.5 12 10 19.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="section-title action-title">${escapeHtml(displayTitle)}</span>`;
+        row.innerHTML = `<span class="section-icon action-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 12h12.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="square"/><path d="M10 4.5L19.5 12 10 19.5" stroke="#ffffff" stroke-width="3.6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span><span class="section-title action-title">${escapeHtml(displayTitle)}</span>`;
         list.appendChild(row);
       });
 
